@@ -179,32 +179,34 @@ function(input, output, session) {
   })
 
 
+  # datasetInput <- reactive({
+  #   switch(input$dataset,
+  #          "zip data" = df[,1:9]%>%
+  #            filter(
+  #              Score >= input$minScore,
+  #              Score <= input$maxScore,
+  #              is.null(input$states) | State %in% input$states,
+  #              is.null(input$cities) | City %in% input$cities,
+  #              is.null(input$zipcodes) | Zipcode %in% input$zipcodes
+  #            )) # okay, so this got rid of the extra columns (lat, long, etc) and it filter the state I selected...
+  # })
+
   datasetInput <- reactive({
-    switch(input$dataset,
-           "zip data" = df[,1:9]%>%
+    df[,1:9]%>%
              filter(
                Score >= input$minScore,
                Score <= input$maxScore,
                is.null(input$states) | State %in% input$states,
                is.null(input$cities) | City %in% input$cities,
                is.null(input$zipcodes) | Zipcode %in% input$zipcodes
-             )) # okay, so this got rid of the extra columns (lat, long, etc) and it filter the state I selected...
+             ) # okay, so this got rid of the extra columns (lat, long, etc) and it filter the state I selected...
   })
 
-
-# BUT it doesn't present it in that nice paged way the other table does
-  # also, i don't need it to drop down to choose a dataset
-  # and I can get rid of the other version
-
-  # Table of selected dataset ----
-  # output$table <- renderTable({
-  #   datasetInput()
-  # })
 
   # Downloadable csv of selected dataset ----
   output$downloadData <- downloadHandler(
     filename = function() {
-      paste(input$dataset, ".csv", sep = "")
+      paste("data", ".csv", sep = "")
     },
     content = function(file) {
       write.csv(datasetInput(), file, row.names = FALSE)
