@@ -175,22 +175,31 @@ function(input, output, session) {
       ) %>%
       mutate(Action = paste('<a class="go-map" href="" data-lat="', Lat, '" data-long="', Long, '" data-zip="', Zipcode, '"><i class="fa fa-crosshairs"></i></a>', sep=""))
     action <- DT::dataTableAjax(session, df, outputId = "ziptable")
-
     DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
   })
 
-  # Reactive value for selected dataset ----
+
   datasetInput <- reactive({
     switch(input$dataset,
-           "zip data" = allzips,
-           "pressure" = pressure,
-           "cars" = cars)
+           "zip data" = df[,1:9]%>%
+             filter(
+               Score >= input$minScore,
+               Score <= input$maxScore,
+               is.null(input$states) | State %in% input$states,
+               is.null(input$cities) | City %in% input$cities,
+               is.null(input$zipcodes) | Zipcode %in% input$zipcodes
+             )) # okay, so this got rid of the extra columns (lat, long, etc) and it filter the state I selected...
   })
 
+
+# BUT it doesn't present it in that nice paged way the other table does
+  # also, i don't need it to drop down to choose a dataset
+  # and I can get rid of the other version
+
   # Table of selected dataset ----
-  output$table <- renderTable({
-    datasetInput()
-  })
+  # output$table <- renderTable({
+  #   datasetInput()
+  # })
 
   # Downloadable csv of selected dataset ----
   output$downloadData <- downloadHandler(

@@ -85,7 +85,7 @@ navbarPage("Superzip", id="nav",
 
           # Input: Choose dataset ----
           selectInput("dataset", "Choose a dataset:",
-                      choices = c("zip data", "pressure", "cars")),
+                      choices = c("zip data")),
 
           # Button
           downloadButton("downloadData", "Download")
