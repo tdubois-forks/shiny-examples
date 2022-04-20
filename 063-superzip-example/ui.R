@@ -72,6 +72,35 @@ navbarPage("Superzip", id="nav",
         numericInput("maxScore", "Max score", min=0, max=100, value=100)
       )
     ),
+    fluidPage(
+
+      # App title ----
+      titlePanel("Downloading Data"),
+
+      # Sidebar layout with input and output definitions ----
+      sidebarLayout(
+
+        # Sidebar panel for inputs ----
+        sidebarPanel(
+
+          # Input: Choose dataset ----
+          selectInput("dataset", "Choose a dataset:",
+                      choices = c("zip data", "pressure", "cars")),
+
+          # Button
+          downloadButton("downloadData", "Download")
+
+        ),
+
+        # Main panel for displaying outputs ----
+        mainPanel(
+
+          tableOutput("table")
+
+        )
+
+      )
+    ),
     hr(),
     DT::dataTableOutput("ziptable")
   ),
