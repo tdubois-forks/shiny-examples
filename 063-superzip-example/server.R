@@ -167,6 +167,7 @@ function(input, output, session) {
   output$ziptable <- DT::renderDataTable({
     df <- cleantable %>%
       filter(
+        # Year == input$year,
         Score >= input$minScore,
         Score <= input$maxScore,
         is.null(input$states) | State %in% input$states,
@@ -194,6 +195,7 @@ function(input, output, session) {
   datasetInput <- reactive({
     df[,1:9]%>%
              filter(
+               # Year == input$year,
                Score >= input$minScore,
                Score <= input$maxScore,
                is.null(input$states) | State %in% input$states,
