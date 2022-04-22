@@ -84,7 +84,7 @@ navbarPage("Superzip", id="nav",
         sidebarPanel(
 
           # Input: Choose dataset ----
-          selectInput("year", "Choose a year:",
+          selectInput("dataset", "Choose a dataset:",
                       choices = c("2015", "2019")),
 
           # Button

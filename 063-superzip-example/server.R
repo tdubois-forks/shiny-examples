@@ -180,30 +180,37 @@ function(input, output, session) {
   })
 
 
-  # datasetInput <- reactive({
-  #   switch(input$dataset,
-  #          "zip data" = df[,1:9]%>%
-  #            filter(
-  #              Score >= input$minScore,
-  #              Score <= input$maxScore,
-  #              is.null(input$states) | State %in% input$states,
-  #              is.null(input$cities) | City %in% input$cities,
-  #              is.null(input$zipcodes) | Zipcode %in% input$zipcodes
-  #            )) # okay, so this got rid of the extra columns (lat, long, etc) and it filter the state I selected...
-  # })
-
   datasetInput <- reactive({
-    df[,1:9]%>%
+    switch(input$dataset,
+           "2015" = cleantable[,1:9]%>%
              filter(
                # Year == input$year,
                Score >= input$minScore,
                Score <= input$maxScore,
                is.null(input$states) | State %in% input$states,
                is.null(input$cities) | City %in% input$cities,
-               is.null(input$zipcodes) | Zipcode %in% input$zipcodes
-             ) # okay, so this got rid of the extra columns (lat, long, etc) and it filter the state I selected...
+               is.null(input$zipcodes) | Zipcode %in% input$zipcodes),
+           "2019" = cleantable[,1:9]%>%
+             filter(
+               # Year == input$year,
+               Score >= input$minScore,
+               Score <= input$maxScore,
+               is.null(input$states) | State %in% input$states,
+               is.null(input$cities) | City %in% input$cities,
+               is.null(input$zipcodes) | Zipcode %in% input$zipcodes))
   })
 
+  # datasetInput <- reactive({
+  #   switch(input$dataset,
+  #          "2015" = cleantable[,1:9], # why does it work with cleantable but not with df?
+  #          "2019" = cleantable[,1:9])
+  # })
+
+  # datasetInput <- reactive({
+  #   switch(input$dataset,
+  #          "2015" = df[,1:9], #   THIS DOESN'T WORK WITH DF, BUT WORKS WITH CLEANTABLE (ABOVE)
+  #          "2019" = df[,1:9])
+  # })
 
   # Downloadable csv of selected dataset ----
   output$downloadData <- downloadHandler(
