@@ -1,4 +1,5 @@
 library(dplyr)
+library(sf)
 
 allzips <- readRDS("data/superzip.rds")
 allzips$latitude <- jitter(allzips$latitude)
@@ -21,3 +22,5 @@ cleantable <- allzips %>%
     Lat = latitude,
     Long = longitude
   )
+
+
