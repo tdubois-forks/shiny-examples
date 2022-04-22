@@ -2,24 +2,24 @@ library(leaflet)
 
 # Choices for drop-downs
 vars <- c(
-  "Is SuperZIP?" = "superzip",
-  "Centile score" = "centile",
+  # "Is SuperZIP?" = "superzip",
+  # "Centile score" = "centile",
+  "Population" = "adultpop",
   "College education" = "college",
   "Low education" = "prc_educ_ltHS",
   "Median income" = "income",
-  "Population" = "adultpop",
-  "Black" = "prc_NHBlack",
-  "Asian" = "prc_NHAsian",
-  "Hispanic" = "prc_HispanicAn",
   "Income" = "income",
   "Renter" = "prc_renterocc_hh",
   "Transit" = "prc_trans_tran",
   "Employed" = "prc_employed",
   "Poverty" = "prc_pov",
-  "Low_education" = "prc_educ_ltHS"
+  "Black" = "prc_NHBlack",
+  "Asian" = "prc_NHAsian",
+  "Hispanic" = "prc_HispanicAn"
+
 )
 
-navbarPage("Superzip", id="nav",
+navbarPage("Lynch Lab Indices Explorer", id="nav",
 
   tabPanel("Interactive map",
     div(class="outer",
@@ -38,7 +38,7 @@ navbarPage("Superzip", id="nav",
         draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
         width = 330, height = "auto",
 
-        h2("ZIP explorer"),
+        h2("Zip Code Explorer"),
 
         selectInput("color", "Color", vars),
         selectInput("size", "Size", vars, selected = "adultpop"),
@@ -47,7 +47,7 @@ navbarPage("Superzip", id="nav",
           numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
         ),
 
-        plotOutput("histCentile", height = 200),
+        # plotOutput("histCentile", height = 200),
         plotOutput("scatterCollegeIncome", height = 250)
       ),
 

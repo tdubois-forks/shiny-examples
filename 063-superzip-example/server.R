@@ -45,19 +45,19 @@ function(input, output, session) {
   # Precalculate the breaks we'll need for the two histograms
   centileBreaks <- hist(plot = FALSE, allzips$centile, breaks = 20)$breaks
 
-  output$histCentile <- renderPlot({
-    # If no zipcodes are in view, don't plot
-    if (nrow(zipsInBounds()) == 0)
-      return(NULL)
-
-    hist(zipsInBounds()$centile,
-      breaks = centileBreaks,
-      main = "SuperZIP score (visible zips)",
-      xlab = "Percentile",
-      xlim = range(allzips$centile),
-      col = '#00DD00',
-      border = 'white')
-  })
+  # output$histCentile <- renderPlot({
+  #   # If no zipcodes are in view, don't plot
+  #   if (nrow(zipsInBounds()) == 0)
+  #     return(NULL)
+  #
+  #   hist(zipsInBounds()$centile,
+  #     breaks = centileBreaks,
+  #     main = "SuperZIP score (visible zips)",
+  #     xlab = "Percentile",
+  #     xlim = range(allzips$centile),
+  #     col = '#00DD00',
+  #     border = 'white')
+  # })
 
   output$scatterCollegeIncome <- renderPlot({
     # If no zipcodes are in view, don't plot
@@ -77,10 +77,10 @@ function(input, output, session) {
       # radius <- zipdata[[sizeBy]]*100
       if (sizeBy == "adultpop") {
         # Radius is treated specially in the "superzip" case.
-        radius <- zipdata[[sizeBy]]/100
+        radius <- zipdata[[sizeBy]]
       }
       else {
-        radius <- zipdata[[sizeBy]]*100
+        radius <- zipdata[[sizeBy]]*500
       }
 
 
@@ -166,7 +166,7 @@ function(input, output, session) {
   output$ziptable <- DT::renderDataTable({
     df <- cleantable %>%
       filter(
-        # Year == input$year,
+        Year == input$dataset,
         is.null(input$states) | State %in% input$states,
         is.null(input$cities) | City %in% input$cities,
         is.null(input$zipcodes) | Zipcode %in% input$zipcodes
