@@ -182,14 +182,14 @@ function(input, output, session) {
     switch(input$dataset,
            "2015" = cleantable |>
              filter(
-               # Year == input$year,
+               Year == 2015,
                is.null(input$states) | State %in% input$states,
                is.null(input$cities) | City %in% input$cities,
                is.null(input$zipcodes) | Zipcode %in% input$zipcodes) |>
              select(c(-Lat, -Long)),
            "2019" = cleantable |>
              filter(
-               # Year == input$year,
+               Year == 2019,
                is.null(input$states) | State %in% input$states,
                is.null(input$cities) | City %in% input$cities,
                is.null(input$zipcodes) | Zipcode %in% input$zipcodes) |>

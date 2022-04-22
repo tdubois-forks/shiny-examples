@@ -31,8 +31,6 @@ allzips2years <- full_join(allzips, myvars, by = c("zipcode" = "NAME"))
 #   )
 
 cleantable <- allzips2years %>%
-# cleantable19 <- allzips2years %>%
-  filter(year == 2019) %>%
   select(
     Year = year,
     City = city.x,
@@ -44,7 +42,14 @@ cleantable <- allzips2years %>%
     Population = adultpop,
     College = college,
     Black = prc_NHBlack,
+    Asian = prc_NHAsian,
+    Hispanic = prc_HispanicAn,
     Income = income,
+    Renter = prc_renterocc_hh,
+    Transit = prc_trans_tran,
+    Employed = prc_employed,
+    Poverty = prc_pov,
+    Low_education = prc_educ_ltHS,
     Lat = latitude,
     Long = longitude
   )
