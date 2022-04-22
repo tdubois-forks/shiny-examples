@@ -71,6 +71,10 @@ navbarPage("Lynch Lab Indices Explorer", id="nav",
         conditionalPanel("input.states",
           selectInput("zipcodes", "Zipcodes", c("All zipcodes"=""), multiple=TRUE)
         )
+      ),
+      column(3,
+             selectInput("dataset", "Year",
+                         choices = c("2015", "2019"))
       )
     ),
 
@@ -86,8 +90,8 @@ navbarPage("Lynch Lab Indices Explorer", id="nav",
         sidebarPanel(
 
           # Input: Choose dataset ----
-          selectInput("dataset", "Choose a dataset:",
-                      choices = c("2015", "2019")),
+          # selectInput("dataset", "Choose a dataset:",
+          #             choices = c("2015", "2019")),
 
           # Button
           downloadButton("downloadData", "Download")

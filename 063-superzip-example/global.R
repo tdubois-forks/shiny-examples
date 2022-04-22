@@ -50,7 +50,7 @@ cleantable <- allzips2years %>%
     Transit = prc_trans_tran,
     Employed = prc_employed,
     Poverty = prc_pov,
-    Low_education = prc_educ_ltHS,
+    'Low education' = prc_educ_ltHS,
     Lat = latitude,
     Long = longitude
   )
