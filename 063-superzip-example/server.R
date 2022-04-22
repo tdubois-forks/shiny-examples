@@ -13,7 +13,7 @@ zipdata <- zipdata[sample.int(nrow(zipdata), 10000),]
 # zipdata <- allzips[sample.int(nrow(allzips), 10000),]
 # By ordering by centile, we ensure that the (comparatively rare) SuperZIPs
 # will be drawn last and thus be easier to see
-zipdata <- zipdata[order(zipdata$centile),]
+zipdata <- zipdata[order(zipdata$prc_pov),]
 # colnames(zipdata2)
 
 function(input, output, session) {
@@ -74,7 +74,14 @@ function(input, output, session) {
     sizeBy <- input$size
       colorData <- zipdata[[colorBy]]
       pal <- colorBin("viridis", colorData, 7, pretty = FALSE)
-      radius <- zipdata[[sizeBy]]
+      # radius <- zipdata[[sizeBy]]*100
+      if (sizeBy == "adultpop") {
+        # Radius is treated specially in the "superzip" case.
+        radius <- zipdata[[sizeBy]]/100
+      }
+      else {
+        radius <- zipdata[[sizeBy]]*100
+      }
 
 
     leafletProxy("map", data = zipdata) %>%
@@ -174,14 +181,14 @@ function(input, output, session) {
     switch(input$dataset,
            "2015" = cleantable |>
              filter(
-               # Year == 2015,
+               Year == 2015,
                is.null(input$states) | State %in% input$states,
                is.null(input$cities) | City %in% input$cities,
                is.null(input$zipcodes) | Zipcode %in% input$zipcodes) |>
              select(c(-Lat, -Long)),
            "2019" = cleantable |>
              filter(
-               # Year == 2019,
+               Year == 2019,
                is.null(input$states) | State %in% input$states,
                is.null(input$cities) | City %in% input$cities,
                is.null(input$zipcodes) | Zipcode %in% input$zipcodes) |>

@@ -5,11 +5,19 @@ vars <- c(
   "Is SuperZIP?" = "superzip",
   "Centile score" = "centile",
   "College education" = "college",
-  # "Low education" = "prc_educ_ltHS",
+  "Low education" = "prc_educ_ltHS",
   "Median income" = "income",
-  "Population" = "adultpop"
+  "Population" = "adultpop",
+  "Black" = "prc_NHBlack",
+  "Asian" = "prc_NHAsian",
+  "Hispanic" = "prc_HispanicAn",
+  "Income" = "income",
+  "Renter" = "prc_renterocc_hh",
+  "Transit" = "prc_trans_tran",
+  "Employed" = "prc_employed",
+  "Poverty" = "prc_pov",
+  "Low_education" = "prc_educ_ltHS"
 )
-
 
 navbarPage("Superzip", id="nav",
 
