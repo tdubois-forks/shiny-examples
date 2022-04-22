@@ -6,10 +6,15 @@ library(dplyr)
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
 set.seed(100)
-zipdata <- allzips[sample.int(nrow(allzips), 10000),]
+zipdata <- allzips2years |>
+  filter(year == 2019)
+
+zipdata <- zipdata[sample.int(nrow(zipdata), 10000),]
+# zipdata <- allzips[sample.int(nrow(allzips), 10000),]
 # By ordering by centile, we ensure that the (comparatively rare) SuperZIPs
 # will be drawn last and thus be easier to see
 zipdata <- zipdata[order(zipdata$centile),]
+# colnames(zipdata2)
 
 function(input, output, session) {
 
@@ -67,23 +72,10 @@ function(input, output, session) {
   observe({
     colorBy <- input$color
     sizeBy <- input$size
-
-    if (colorBy == "superzip") {
-      # Color and palette are treated specially in the "superzip" case, because
-      # the values are categorical instead of continuous.
-      colorData <- ifelse(zipdata$centile >= (100 - input$threshold), "yes", "no")
-      pal <- colorFactor("viridis", colorData)
-    } else {
       colorData <- zipdata[[colorBy]]
       pal <- colorBin("viridis", colorData, 7, pretty = FALSE)
-    }
+      radius <- zipdata[[sizeBy]]
 
-    if (sizeBy == "superzip") {
-      # Radius is treated specially in the "superzip" case.
-      radius <- ifelse(zipdata$centile >= (100 - input$threshold), 30000, 3000)
-    } else {
-      radius <- zipdata[[sizeBy]] / max(zipdata[[sizeBy]]) * 30000
-    }
 
     leafletProxy("map", data = zipdata) %>%
       clearShapes() %>%
@@ -182,14 +174,14 @@ function(input, output, session) {
     switch(input$dataset,
            "2015" = cleantable |>
              filter(
-               Year == 2015,
+               # Year == 2015,
                is.null(input$states) | State %in% input$states,
                is.null(input$cities) | City %in% input$cities,
                is.null(input$zipcodes) | Zipcode %in% input$zipcodes) |>
              select(c(-Lat, -Long)),
            "2019" = cleantable |>
              filter(
-               Year == 2019,
+               # Year == 2019,
                is.null(input$states) | State %in% input$states,
                is.null(input$cities) | City %in% input$cities,
                is.null(input$zipcodes) | Zipcode %in% input$zipcodes) |>
