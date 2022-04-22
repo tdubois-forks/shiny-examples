@@ -168,8 +168,6 @@ function(input, output, session) {
     df <- cleantable %>%
       filter(
         # Year == input$year,
-        Score >= input$minScore,
-        Score <= input$maxScore,
         is.null(input$states) | State %in% input$states,
         is.null(input$cities) | City %in% input$cities,
         is.null(input$zipcodes) | Zipcode %in% input$zipcodes
@@ -185,32 +183,16 @@ function(input, output, session) {
            "2015" = cleantable[,1:9]%>%
              filter(
                # Year == input$year,
-               Score >= input$minScore,
-               Score <= input$maxScore,
                is.null(input$states) | State %in% input$states,
                is.null(input$cities) | City %in% input$cities,
                is.null(input$zipcodes) | Zipcode %in% input$zipcodes),
            "2019" = cleantable[,1:9]%>%
              filter(
                # Year == input$year,
-               Score >= input$minScore,
-               Score <= input$maxScore,
                is.null(input$states) | State %in% input$states,
                is.null(input$cities) | City %in% input$cities,
                is.null(input$zipcodes) | Zipcode %in% input$zipcodes))
   })
-
-  # datasetInput <- reactive({
-  #   switch(input$dataset,
-  #          "2015" = cleantable[,1:9], # why does it work with cleantable but not with df?
-  #          "2019" = cleantable[,1:9])
-  # })
-
-  # datasetInput <- reactive({
-  #   switch(input$dataset,
-  #          "2015" = df[,1:9], #   THIS DOESN'T WORK WITH DF, BUT WORKS WITH CLEANTABLE (ABOVE)
-  #          "2019" = df[,1:9])
-  # })
 
   # Downloadable csv of selected dataset ----
   output$downloadData <- downloadHandler(
@@ -222,3 +204,5 @@ function(input, output, session) {
     }
   )
 }
+
+#   DOWNLOAD ONLY WORKS IF YOU OPEN THE APP IN A BROWSER, NOT IF YOU TRY IT FROM THE RSTUDIO WINDOW

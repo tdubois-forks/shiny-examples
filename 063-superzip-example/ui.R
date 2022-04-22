@@ -64,14 +64,7 @@ navbarPage("Superzip", id="nav",
         )
       )
     ),
-    fluidRow(
-      column(1,
-        numericInput("minScore", "Min score", min=0, max=100, value=0)
-      ),
-      column(1,
-        numericInput("maxScore", "Max score", min=0, max=100, value=100)
-      )
-    ),
+
     fluidPage(
 
       # App title ----
