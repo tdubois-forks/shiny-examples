@@ -180,18 +180,20 @@ function(input, output, session) {
 
   datasetInput <- reactive({
     switch(input$dataset,
-           "2015" = cleantable[,1:9]%>%
+           "2015" = cleantable |>
              filter(
                # Year == input$year,
                is.null(input$states) | State %in% input$states,
                is.null(input$cities) | City %in% input$cities,
-               is.null(input$zipcodes) | Zipcode %in% input$zipcodes),
-           "2019" = cleantable[,1:9]%>%
+               is.null(input$zipcodes) | Zipcode %in% input$zipcodes) |>
+             select(c(-Lat, -Long)),
+           "2019" = cleantable |>
              filter(
                # Year == input$year,
                is.null(input$states) | State %in% input$states,
                is.null(input$cities) | City %in% input$cities,
-               is.null(input$zipcodes) | Zipcode %in% input$zipcodes))
+               is.null(input$zipcodes) | Zipcode %in% input$zipcodes) |>
+             select(c(-Lat, -Long)))
   })
 
   # Downloadable csv of selected dataset ----
