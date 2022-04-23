@@ -41,7 +41,6 @@ cleantable <- allzips2years %>%
     # Score = centile,
     # Superzip = superzip,
     Population = adultpop,
-    College = college,
     Black = prc_NHBlack,
     Asian = prc_NHAsian,
     Hispanic = prc_HispanicAn,
@@ -50,6 +49,7 @@ cleantable <- allzips2years %>%
     Transit = prc_trans_tran,
     Employed = prc_employed,
     Poverty = prc_pov,
+    College = college,
     'Low education' = prc_educ_ltHS,
     Lat = latitude,
     Long = longitude
