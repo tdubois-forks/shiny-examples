@@ -1,15 +1,18 @@
 library(dplyr)
 library(readr)
 
-getwd()
-allzips <- readRDS("C:/GitHub/shiny-examples/063-superzip-example/data/superzip.rds")
+
+not_sel <- "Not Selected"
+
+
+allzips <- readRDS("U:/Projects/R package - Grant Idea/GenePattern/shiny-examples/063-superzip-example/data/superzip.rds")
 allzips$latitude <- jitter(allzips$latitude)
 allzips$longitude <- jitter(allzips$longitude)
 allzips$college <- allzips$college * 100
 allzips$zipcode <- formatC(allzips$zipcode, width=5, format="d", flag="0")
 row.names(allzips) <- allzips$zipcode
 
-myvars <- read.csv("C:/GitHub/shiny-examples/063-superzip-example/data/myvars.csv") |>
+myvars <- read.csv("U:/Projects/R package - Grant Idea/GenePattern/shiny-examples/063-superzip-example/data/myvars.csv") |>
   mutate(NAME = gsub("ZCTA5 ", "", NAME))
 
 allzips2years <- full_join(allzips, myvars, by = c("zipcode" = "NAME"))
