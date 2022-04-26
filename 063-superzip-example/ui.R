@@ -125,9 +125,9 @@ navbarPage("Lynch Lab Indices Explorer", id="nav",
       sidebarPanel(
         title = "Inputs",
         fileInput("csv_input", "Select CSV File to Import", accept = ".csv"),
-        selectInput("num_var_1", "Numerical Variable 1", choices = c(not_sel)),
-        selectInput("num_var_2", "Numerical Variable 2", choices = c(not_sel)),
-        selectInput("fact_var", "Factor Variable", choices = c(not_sel)),
+        selectInput("num_var_1", "Zip Code", choices = c(not_sel)),
+        selectInput("num_var_2", "Patient Count", choices = c(not_sel)),
+        selectInput("fact_var", "State", choices = c(not_sel)),
         br(),
         actionButton("run_button", "Run Analysis", icon = icon("play"))
       ),

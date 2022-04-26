@@ -2,37 +2,20 @@ library(dplyr)
 library(readr)
 
 
-not_sel <- "Not Selected"
+# CALL IN WHAT WE NEED
 
+allzips <- readRDS("U:/Projects/R package - Grant Idea/GenePattern/shiny-examples/063-superzip-example/data/superzip.rds") |>
+  mutate(latitude = jitter(allzips$latitude),
+         longitude = jitter(allzips$longitude),
+         college = college * 100,
+         zipcode = formatC(allzips$zipcode, width=5, format="d", flag="0"))
 
-allzips <- readRDS("U:/Projects/R package - Grant Idea/GenePattern/shiny-examples/063-superzip-example/data/superzip.rds")
-allzips$latitude <- jitter(allzips$latitude)
-allzips$longitude <- jitter(allzips$longitude)
-allzips$college <- allzips$college * 100
-allzips$zipcode <- formatC(allzips$zipcode, width=5, format="d", flag="0")
 row.names(allzips) <- allzips$zipcode
 
 myvars <- read.csv("U:/Projects/R package - Grant Idea/GenePattern/shiny-examples/063-superzip-example/data/myvars.csv") |>
   mutate(NAME = gsub("ZCTA5 ", "", NAME))
 
 allzips2years <- full_join(allzips, myvars, by = c("zipcode" = "NAME"))
-# allzips <- full_join(allzips, myvars[which(myvars$year == "2019"),], by = c("zipcode" = "NAME"))
-
-
-# cleantable <- allzips %>%
-#   select(
-#     City = city.x,
-#     State = state.x,
-#     Zipcode = zipcode,
-#     Rank = rank,
-#     Score = centile,
-#     Superzip = superzip,
-#     Population = adultpop,
-#     College = college,
-#     Income = income,
-#     Lat = latitude,
-#     Long = longitude
-#   )
 
 cleantable <- allzips2years %>%
   select(
@@ -40,9 +23,6 @@ cleantable <- allzips2years %>%
     City = city.x,
     State = state.x,
     Zipcode = zipcode,
-    # Rank = rank,
-    # Score = centile,
-    # Superzip = superzip,
     Population = adultpop,
     Black = prc_NHBlack,
     Asian = prc_NHAsian,
@@ -58,4 +38,117 @@ cleantable <- allzips2years %>%
     Long = longitude
   )
 
-str(cleantable)
+cleantable19 <- cleantable |>
+  filter(Year == 2019)
+
+# THESE ARE FUNCTIONS PASTED FROM HERE: https://github.com/MatePocs/rshiny_apps/blob/main/data_analyser/app.R
+
+not_sel <- "Not Selected"
+
+
+# draw_plot_1 <- function(data_input, num_var_1, num_var_2, fact_var){
+#   if(fact_var!=not_sel){
+#     data_input[,(fact_var):= as.factor(data_input[,get(fact_var)])]
+#   }
+#   if(num_var_1 != not_sel & num_var_2 != not_sel & fact_var != not_sel){
+#     ggplot(data = data_input,
+#            aes_string(x = num_var_1, y = num_var_2, color = fact_var)) +
+#       geom_point()
+#   }
+#   else if(num_var_1 != not_sel & num_var_2 != not_sel & fact_var == not_sel){
+#     ggplot(data = data_input,
+#            aes_string(x = num_var_1, y = num_var_2)) +
+#       geom_point()
+#   }
+#   else if(num_var_1 != not_sel & num_var_2 == not_sel & fact_var != not_sel){
+#     ggplot(data = data_input,
+#            aes_string(x = fact_var, y = num_var_1)) +
+#       geom_violin()
+#   }
+#   else if(num_var_1 == not_sel & num_var_2 != not_sel & fact_var != not_sel){
+#     ggplot(data = data_input,
+#            aes_string(x = fact_var, y = num_var_2)) +
+#       geom_violin()
+#   }
+#   else if(num_var_1 != not_sel & num_var_2 == not_sel & fact_var == not_sel){
+#     ggplot(data = data_input,
+#            aes_string(x = num_var_1)) +
+#       geom_histogram()
+#   }
+#   else if(num_var_1 == not_sel & num_var_2 != not_sel & fact_var == not_sel){
+#     ggplot(data = data_input,
+#            aes_string(x = num_var_2)) +
+#       geom_histogram()
+#   }
+#   else if(num_var_1 == not_sel & num_var_2 == not_sel & fact_var != not_sel){
+#     ggplot(data = data_input,
+#            aes_string(x = fact_var)) +
+#       geom_bar()
+#   }
+# }
+
+
+draw_plot_1 <- function(data_input){
+  # HERE I SAY ZIP, BUT IT SHOULD BE THE INPUT WE DESIGNATE AS ZIP
+  data_input <- data_input |>
+    mutate(ZIP = as.character(ZIP))
+  # FILTER FOR THE YEAR TO USE
+  cleantable19 <- cleantable |>
+    filter(Year == 2019)
+  # JOIN THE NEIGHBORHOOD VARS TO MY UPLOADED DATA, AND CALCULATE THE POVERTY CATEGORIES
+  joined_data <- left_join(data_input, cleantable19, by = c("ZIP" = "Zipcode")) |>
+    mutate(p_level_4 = cut(Poverty, breaks = c(0,10,20,30,100),
+                           labels = c("Low (<10%)", "Medium (10-20%)", "High (20-30%)", "Very High (>30%)")))
+  # COUNT OF PATIENTS PER POV LEVEL - PULL FROM OTHER CODE TO MAKE THIS FANCIER- THIS IS A PLACEHOLDER FOR NOW
+  pov_groups <- joined_data |>
+    group_by(p_level_4)|>
+    summarize(n = sum(Pat_count))
+  # SAME AS ABOVE- THIS IS A PLACEHOLDER
+  ggplot(data = as.data.frame(pov_groups),
+         aes(x = p_level_4, y = n)) +
+    geom_bar(stat="identity")
+}
+
+create_num_var_table <- function(data_input, num_var){
+  if(num_var != not_sel){
+    col <- data_input[,get(num_var)]
+    if (length(col)>5000) col_norm <- sample(col,5000) else col_norm <- col
+    norm_test <- shapiro.test(col_norm)
+    statistic <- c("mean", "median", "5th percentile", "95th percentile",
+                   "Shapiro statistic", "Shapiro p-value")
+    value <- c(round(mean(col),2), round(median(col),2),
+               round(quantile(col, 0.05),2), round(quantile(col, 0.95),2),
+               norm_test$statistic, norm_test$p.value)
+    data.table(statistic, value)
+  }
+}
+
+create_fact_var_table <- function(data_input, fact_var){
+  if(fact_var != not_sel){
+    freq_tbl <- data_input[,.N, by = get(fact_var)]
+    freq_tbl <- setnames(freq_tbl,c("factor_value", "count"))
+    freq_tbl
+  }
+}
+
+create_combined_table <- function(data_input, num_var_1, num_var_2, fact_var){
+  if(fact_var != not_sel){
+    if(num_var_1 != not_sel & num_var_2 != not_sel){
+      res_tbl <- data_input[,.(correlation = cor(get(num_var_1), get(num_var_2))), by = fact_var]
+    }
+    else if(num_var_1 != not_sel & num_var_2 == not_sel){
+      res_tbl <- data_input[,.(mean = mean(get(num_var_1))), by = fact_var]
+    }
+    else if(num_var_1 == not_sel & num_var_2 != not_sel){
+      res_tbl <- data_input[,.(mean = mean(get(num_var_2))), by = fact_var]
+    }
+  }
+  else if(num_var_1 != not_sel & num_var_2 != not_sel){
+    res_tbl <- data.table(
+      statistic = c("correlation"),
+      value = c(cor(
+        data_input[,get(num_var_1)],
+        data_input[,get(num_var_2)])))
+  }
+  return(res_tbl)
+}

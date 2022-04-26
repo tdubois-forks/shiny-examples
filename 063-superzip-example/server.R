@@ -3,6 +3,10 @@ library(RColorBrewer)
 library(scales)
 library(lattice)
 library(dplyr)
+library(shiny)
+library(shinythemes)
+library(data.table)
+library(ggplot2)
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
 set.seed(100)
@@ -204,6 +208,71 @@ function(input, output, session) {
       write.csv(datasetInput(), file, row.names = FALSE)
     }
   )
-}
 
-#   DOWNLOAD ONLY WORKS IF YOU OPEN THE APP IN A BROWSER, NOT IF YOU TRY IT FROM THE RSTUDIO WINDOW
+
+#   NOTE: DOWNLOAD ONLY WORKS IF YOU OPEN THE APP IN A BROWSER, NOT IF YOU TRY IT FROM THE RSTUDIO WINDOW
+
+# PASTED FROM data_analyser app
+
+
+options(shiny.maxRequestSize=10*1024^2)
+
+data_input <- reactive({
+  req(input$csv_input)
+  fread(input$csv_input$datapath)
+})
+
+observeEvent(data_input(),{
+  choices <- c(not_sel,names(data_input()))
+  updateSelectInput(inputId = "num_var_1", choices = choices)
+  updateSelectInput(inputId = "num_var_2", choices = choices)
+  updateSelectInput(inputId = "fact_var", choices = choices)
+})
+
+num_var_1 <- eventReactive(input$run_button,input$num_var_1)
+num_var_2 <- eventReactive(input$run_button,input$num_var_2)
+fact_var <- eventReactive(input$run_button,input$fact_var)
+
+# plot
+
+plot_1 <- eventReactive(input$run_button,{
+  draw_plot_1(data_input())
+})
+
+output$plot_1 <- renderPlot(plot_1())
+
+# 1-d summary tables
+
+output$num_var_1_title <- renderText(paste("Num Var 1:",num_var_1()))
+
+num_var_1_summary_table <- eventReactive(input$run_button,{
+  create_num_var_table(data_input(), num_var_1())
+})
+
+output$num_var_1_summary_table <- renderTable(num_var_1_summary_table(),colnames = FALSE)
+
+output$num_var_2_title <- renderText(paste("Num Var 2:",num_var_2()))
+
+num_var_2_summary_table <- eventReactive(input$run_button,{
+  create_num_var_table(data_input(), num_var_2())
+})
+
+output$num_var_2_summary_table <- renderTable(num_var_2_summary_table(),colnames = FALSE)
+
+output$fact_var_title <- renderText(paste("Factor Var:",fact_var()))
+
+fact_var_summary_table <- eventReactive(input$run_button,{
+  create_fact_var_table(data_input(), fact_var())
+})
+
+output$fact_var_summary_table <- renderTable(fact_var_summary_table(),colnames = FALSE)
+
+# multi-d summary table
+
+combined_summary_table <- eventReactive(input$run_button,{
+  create_combined_table(data_input(), num_var_1(), num_var_2(), fact_var())
+})
+
+output$combined_summary_table <- renderTable(combined_summary_table())
+
+}
