@@ -46,48 +46,6 @@ cleantable19 <- cleantable |>
 not_sel <- "Not Selected"
 
 
-# draw_plot_1 <- function(data_input, num_var_1, num_var_2, fact_var){
-#   if(fact_var!=not_sel){
-#     data_input[,(fact_var):= as.factor(data_input[,get(fact_var)])]
-#   }
-#   if(num_var_1 != not_sel & num_var_2 != not_sel & fact_var != not_sel){
-#     ggplot(data = data_input,
-#            aes_string(x = num_var_1, y = num_var_2, color = fact_var)) +
-#       geom_point()
-#   }
-#   else if(num_var_1 != not_sel & num_var_2 != not_sel & fact_var == not_sel){
-#     ggplot(data = data_input,
-#            aes_string(x = num_var_1, y = num_var_2)) +
-#       geom_point()
-#   }
-#   else if(num_var_1 != not_sel & num_var_2 == not_sel & fact_var != not_sel){
-#     ggplot(data = data_input,
-#            aes_string(x = fact_var, y = num_var_1)) +
-#       geom_violin()
-#   }
-#   else if(num_var_1 == not_sel & num_var_2 != not_sel & fact_var != not_sel){
-#     ggplot(data = data_input,
-#            aes_string(x = fact_var, y = num_var_2)) +
-#       geom_violin()
-#   }
-#   else if(num_var_1 != not_sel & num_var_2 == not_sel & fact_var == not_sel){
-#     ggplot(data = data_input,
-#            aes_string(x = num_var_1)) +
-#       geom_histogram()
-#   }
-#   else if(num_var_1 == not_sel & num_var_2 != not_sel & fact_var == not_sel){
-#     ggplot(data = data_input,
-#            aes_string(x = num_var_2)) +
-#       geom_histogram()
-#   }
-#   else if(num_var_1 == not_sel & num_var_2 == not_sel & fact_var != not_sel){
-#     ggplot(data = data_input,
-#            aes_string(x = fact_var)) +
-#       geom_bar()
-#   }
-# }
-
-
 draw_plot_1 <- function(data_input){
   # HERE I SAY ZIP, BUT IT SHOULD BE THE INPUT WE DESIGNATE AS ZIP
   data_input <- data_input |>
