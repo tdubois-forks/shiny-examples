@@ -3,7 +3,7 @@ library(readr)
 
 
 # CALL IN WHAT WE NEED
-
+crosswalk <- read_csv("U:/Projects/R package - Grant Idea/GenePattern/ZiptoZcta_Crosswalk_2021.csv")
 allzips <- readRDS("U:/Projects/R package - Grant Idea/GenePattern/shiny-examples/063-superzip-example/data/superzip.rds") |>
   mutate(latitude = jitter(allzips$latitude),
          longitude = jitter(allzips$longitude),
@@ -47,24 +47,24 @@ not_sel <- "Not Selected"
 
 
 create_state_table <- function(data_input, state){
-  # data_input <- data_input |>
-  #   mutate(ZIP = as.character(ZIP),
-  #          ZIP = str_pad(ZIP, 5, "left", "0"))
-  # # IF NOT, ATTACH IT HERE
-  # if(state == not_sel){
-  #   state_data <- left_join(data_input, crosswalk, by = c("ZIP" = "ZIP_CODE"))
-  #
-  #   state_data <- state_data |>
-  #     group_by(STATE)|>
-  #     summarize(Patients = sum(Pat_count))
-  # }
-  # else if(state != not_sel){
+  data_input <- data_input |>
+    mutate(ZIP = as.character(ZIP),
+           ZIP = str_pad(ZIP, 5, "left", "0"))
+  # IF NOT, ATTACH IT HERE
+  if(state == not_sel){
+    state_data <- left_join(data_input, crosswalk, by = c("ZIP" = "ZIP_CODE"))|>
+      group_by(STATE)|>
+      summarize(Patients = sum(Pat_count))|>
+      arrange(-Patients) |>
+      setNames(c("State", "Count of patients"))
+  }
+  else if(state != not_sel){
   state_data <- data_input |>
     group_by(state)|>
     summarize(Patients = sum(Pat_count))|>
     arrange(-Patients) |>
     setNames(c("State", "Count of patients"))
-  # }
+  }
   return(state_data)
 }
 

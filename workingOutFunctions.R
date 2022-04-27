@@ -5,60 +5,36 @@ crosswalk <- read_csv("U:/Projects/R package - Grant Idea/GenePattern/ZiptoZcta_
 colnames(crosswalk)
 data_input <- pat_count_zips_G1
 
-# create_fact_var_table <- function(data_input){
-#   data_input <- data_input |>
-#     mutate(ZIP = as.character(ZIP),
-#            ZIP = str_pad(ZIP, 5, "left", "0"))
-#   # IF NOT, ATTACH IT HERE
-#   if(fact_var != not_sel){
-#     # HOW MANY JOINS DO WE HAVE BASED ON ZIP_CODE?
-#     # state_data_ZC <- left_join(data_input, crosswalk, by = c("ZIP" = "ZIP_CODE"))
-#     # complete_Zip_Code <- nrow(state_data_ZC[complete.cases(state_data_ZC),])
-#     # sum(state_data_ZC$Pat_count) # good, correct number of pats
-#     # HOW MANY JOINS DO WE HAVE BASED ON ZCTA?
-#     # state_data_ZT <- left_join(data_input, crosswalk, by = c("ZIP" = "ZCTA"))
-#     # complete_ZCTA <- nrow(state_data_ZT[complete.cases(state_data_ZT),])
-#     # sum(state_data_ZT$Pat_count) # uh-oh. this resulted in too many pats
-#
-#     # if (complete_Zip_Code > complete_ZCTA) {
-#       state_data <- left_join(data_input, crosswalk, by = c("ZIP" = "ZIP_CODE"))
-#       # else
-#       # state_data <- left_join(data_input, crosswalk, by = c("ZIP" = "ZCTA"))
-#       state_data <- state_data |>
-#         group_by(STATE)|>
-#         summarize(Patients = sum(Pat_count))
-#     }
-#     # IF STATE IS INCLUDED, USE THAT
-#   # else
-#     state_data <- data_input |>
-#       group_by(fact_var)|>
-#       summarize(Patients = sum(Pat_count))
-#
-#   return(state_data)
-# }
 
-create_fact_var_table <- function(data_input){
+
+
+# create_state_table <- function(data_input, state){
   data_input <- data_input |>
     mutate(ZIP = as.character(ZIP),
            ZIP = str_pad(ZIP, 5, "left", "0"))
   # IF NOT, ATTACH IT HERE
-  # if(fact_var == not_sel){
-    state_data <- left_join(data_input, crosswalk, by = c("ZIP" = "ZIP_CODE"))
-
-    state_data <- state_data |>
+  # if(state == not_sel){
+    state_data <- left_join(data_input, crosswalk, by = c("ZIP" = "ZIP_CODE"))|>
       group_by(STATE)|>
-      summarize(Patients = sum(Pat_count))
+      summarize(Patients = sum(Pat_count))|>
+      arrange(-Patients) |>
+      setNames(c("State", "Count of patients"))
   # }
-  # else if(fact_var != not_sel){
-  state_data <- data_input |>
-    group_by(STATE)|>
-    summarize(Patients = sum(Pat_count))
+  # else if(state != not_sel){
+    state_data <- data_input |>
+      group_by(state)|>
+      summarize(Patients = sum(Pat_count))|>
+      arrange(-Patients) |>
+      setNames(c("State", "Count of patients"))
   # }
-  state_data <- state_data|>
-           arrange(-Patients) |>
-    setNames(c("Zip code", "Poop"))
-state_data
-}
+  # return(state_data)
+# }
+
+
+
+
+
+
 
 TestDataWState <- read_csv("U:/Projects/R package - Grant Idea/GenePattern/TestDataWState.csv")
 data_input <- TestDataWState
