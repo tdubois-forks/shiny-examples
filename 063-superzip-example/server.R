@@ -226,12 +226,12 @@ observeEvent(data_input(),{
   choices <- c(not_sel,names(data_input()))
   updateSelectInput(inputId = "num_var_1", choices = choices)
   updateSelectInput(inputId = "num_var_2", choices = choices)
-  updateSelectInput(inputId = "fact_var", choices = choices)
+  updateSelectInput(inputId = "state", choices = choices)
 })
 
 num_var_1 <- eventReactive(input$run_button,input$num_var_1)
 num_var_2 <- eventReactive(input$run_button,input$num_var_2)
-fact_var <- eventReactive(input$run_button,input$fact_var)
+state <- eventReactive(input$run_button,input$state)
 
 # plot
 
@@ -243,36 +243,36 @@ output$plot_1 <- renderPlot(plot_1())
 
 # 1-d summary tables
 
-output$num_var_1_title <- renderText(paste("Num Var 1:",num_var_1()))
+# output$num_var_1_title <- renderText(paste("Num Var 1:",num_var_1()))
+#
+# num_var_1_summary_table <- eventReactive(input$run_button,{
+#   create_num_var_table(data_input(), num_var_1())
+# })
 
-num_var_1_summary_table <- eventReactive(input$run_button,{
-  create_num_var_table(data_input(), num_var_1())
+# output$num_var_1_summary_table <- renderTable(num_var_1_summary_table(),colnames = FALSE)
+#
+# output$num_var_2_title <- renderText(paste("Num Var 2:",num_var_2()))
+#
+# num_var_2_summary_table <- eventReactive(input$run_button,{
+#   create_num_var_table(data_input(), num_var_2())
+# })
+
+# output$num_var_2_summary_table <- renderTable(num_var_2_summary_table(),colnames = FALSE)
+
+# output$state_title <- renderText(paste("Patient Distribution Among States"))
+
+state_summary_table <- eventReactive(input$run_button,{
+  create_state_table(data_input(), state())
 })
 
-output$num_var_1_summary_table <- renderTable(num_var_1_summary_table(),colnames = FALSE)
-
-output$num_var_2_title <- renderText(paste("Num Var 2:",num_var_2()))
-
-num_var_2_summary_table <- eventReactive(input$run_button,{
-  create_num_var_table(data_input(), num_var_2())
-})
-
-output$num_var_2_summary_table <- renderTable(num_var_2_summary_table(),colnames = FALSE)
-
-output$fact_var_title <- renderText(paste("Patient Distribution Among States"))
-
-fact_var_summary_table <- eventReactive(input$run_button,{
-  create_fact_var_table(data_input(), fact_var())
-})
-
-output$fact_var_summary_table <- renderTable(fact_var_summary_table(),colnames = FALSE)
+output$state_summary_table <- renderTable(state_data, digits = 0, colnames = TRUE)
 
 # multi-d summary table
 
-combined_summary_table <- eventReactive(input$run_button,{
-  create_combined_table(data_input(), num_var_1(), num_var_2(), fact_var())
-})
-
-output$combined_summary_table <- renderTable(combined_summary_table())
-
+# combined_summary_table <- eventReactive(input$run_button,{
+#   create_combined_table(data_input(), num_var_1(), num_var_2(), state())
+# })
+#
+# output$combined_summary_table <- renderTable(combined_summary_table())
+#
 }

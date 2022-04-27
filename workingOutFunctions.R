@@ -55,11 +55,33 @@ create_fact_var_table <- function(data_input){
     summarize(Patients = sum(Pat_count))
   # }
   state_data <- state_data|>
-           arrange(-Patients)
+           arrange(-Patients) |>
+    setNames(c("Zip code", "Poop"))
 state_data
-sum(state_data$Patients)
-return(state_data|>
-           arrange(-Patients))
+}
+
+TestDataWState <- read_csv("U:/Projects/R package - Grant Idea/GenePattern/TestDataWState.csv")
+data_input <- TestDataWState
+create_state_table <- function(data_input, state){
+  # data_input <- data_input |>
+  #   mutate(ZIP = as.character(ZIP),
+  #          ZIP = str_pad(ZIP, 5, "left", "0"))
+  # # IF NOT, ATTACH IT HERE
+  # if(state == not_sel){
+  #   state_data <- left_join(data_input, crosswalk, by = c("ZIP" = "ZIP_CODE"))
+  #
+  #   state_data <- state_data |>
+  #     group_by(STATE)|>
+  #     summarize(Patients = sum(Pat_count))
+  # }
+  # else if(state != not_sel){
+  state_data <- data_input |>
+    group_by(STATE)|>
+    summarize(Patients = sum(Pat_count))|>
+    arrange(-Patients) |>
+    setNames(c("State", "Count of patients"))
+  # }
+  return(state_data)
 }
 
 create_fact_var_table(data_input)
@@ -67,7 +89,7 @@ create_fact_var_table(data_input)
 
 
 getwd()
-write.csv(state_data_ZT, "U:/Projects/R package - Grant Idea/GenePattern/TestDataWState.csv")
+write.csv(state_data_ZC, "U:/Projects/R package - Grant Idea/GenePattern/TestDataWState.csv")
 create_fact_var_table(pat_count_zips_G1)
 
 

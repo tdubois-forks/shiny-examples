@@ -46,33 +46,34 @@ cleantable19 <- cleantable |>
 not_sel <- "Not Selected"
 
 
-
-create_fact_var_table <- function(data_input, fact_var){
+create_state_table <- function(data_input, state){
   # data_input <- data_input |>
   #   mutate(ZIP = as.character(ZIP),
   #          ZIP = str_pad(ZIP, 5, "left", "0"))
   # # IF NOT, ATTACH IT HERE
-  # if(fact_var == not_sel){
+  # if(state == not_sel){
   #   state_data <- left_join(data_input, crosswalk, by = c("ZIP" = "ZIP_CODE"))
   #
   #   state_data <- state_data |>
   #     group_by(STATE)|>
   #     summarize(Patients = sum(Pat_count))
   # }
-  # else if(fact_var != not_sel){
-    state_data <- data_input |>
-      group_by(fact_var)|>
-      summarize(Patients = sum(Pat_count))
+  # else if(state != not_sel){
+  state_data <- data_input |>
+    group_by(state)|>
+    summarize(Patients = sum(Pat_count))|>
+    arrange(-Patients) |>
+    setNames(c("State", "Count of patients"))
   # }
   return(state_data)
 }
 
-# create_fact_var_table <- function(data_input){
+# create_state_table <- function(data_input){
 #   data_input <- data_input |>
 #     mutate(ZIP = as.character(ZIP),
 #            ZIP = str_pad(ZIP, 5, "left", "0"))
 #   # IF NOT, ATTACH IT HERE
-#   if(fact_var == not_sel){
+#   if(state == not_sel){
 #     # HOW MANY JOINS DO WE HAVE BASED ON ZIP_CODE?
 #     state_data_ZC <- left_join(data_input, crosswalk, by = c("ZIP" = "ZIP_CODE"))
 #     complete_Zip_Code <- nrow(state_data_ZC[complete.cases(state_data_ZC),])
@@ -95,9 +96,9 @@ create_fact_var_table <- function(data_input, fact_var){
 #       }
 #   }
 #     # IF STATE IS INCLUDED, USE THAT
-#     else if (fact_var != not_sel){
+#     else if (state != not_sel){
 #       state_data <- data_input |>
-#       group_by(fact_var)|>
+#       group_by(state)|>
 #       summarize(Patients = sum(Pat_count))
 #
 #       state_table <- state_data|>
@@ -144,24 +145,24 @@ create_num_var_table <- function(data_input, num_var){
   }
 }
 
-create_fact_var_table <- function(data_input, fact_var){
-  if(fact_var != not_sel){
-    freq_tbl <- data_input[,.N, by = get(fact_var)]
+create_state_table <- function(data_input, state){
+  if(state != not_sel){
+    freq_tbl <- data_input[,.N, by = get(state)]
     freq_tbl <- setnames(freq_tbl,c("factor_value", "count"))
     freq_tbl
   }
 }
 
-create_combined_table <- function(data_input, num_var_1, num_var_2, fact_var){
-  if(fact_var != not_sel){
+create_combined_table <- function(data_input, num_var_1, num_var_2, state){
+  if(state != not_sel){
     if(num_var_1 != not_sel & num_var_2 != not_sel){
-      res_tbl <- data_input[,.(correlation = cor(get(num_var_1), get(num_var_2))), by = fact_var]
+      res_tbl <- data_input[,.(correlation = cor(get(num_var_1), get(num_var_2))), by = state]
     }
     else if(num_var_1 != not_sel & num_var_2 == not_sel){
-      res_tbl <- data_input[,.(mean = mean(get(num_var_1))), by = fact_var]
+      res_tbl <- data_input[,.(mean = mean(get(num_var_1))), by = state]
     }
     else if(num_var_1 == not_sel & num_var_2 != not_sel){
-      res_tbl <- data_input[,.(mean = mean(get(num_var_2))), by = fact_var]
+      res_tbl <- data_input[,.(mean = mean(get(num_var_2))), by = state]
     }
   }
   else if(num_var_1 != not_sel & num_var_2 != not_sel){

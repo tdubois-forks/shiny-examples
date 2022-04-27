@@ -127,7 +127,7 @@ navbarPage("Lynch Lab Indices Explorer", id="nav",
         fileInput("csv_input", "Select CSV File to Import", accept = ".csv"),
         selectInput("num_var_1", "Zip Code", choices = c(not_sel)),
         selectInput("num_var_2", "Patient Count", choices = c(not_sel)),
-        selectInput("fact_var", "State", choices = c(not_sel)),
+        selectInput("state", "State", choices = c(not_sel)),
         br(),
         actionButton("run_button", "Run Analysis", icon = icon("play"))
       ),
@@ -142,12 +142,12 @@ navbarPage("Lynch Lab Indices Explorer", id="nav",
             fluidRow(
               column(width = 4, strong(textOutput("num_var_1_title"))),
               column(width = 4, strong(textOutput("num_var_2_title"))),
-              column(width = 4, strong(textOutput("fact_var_title")))
+              column(width = 4, strong(textOutput("state_title")))
             ),
             fluidRow(
               column(width = 4, tableOutput("num_var_1_summary_table")),
               column(width = 4, tableOutput("num_var_2_summary_table")),
-              column(width = 4, tableOutput("fact_var_summary_table"))
+              column(width = 4, tableOutput("state_summary_table"))
             ),
             fluidRow(
               column(width = 12, strong("Combined Statistics"))
