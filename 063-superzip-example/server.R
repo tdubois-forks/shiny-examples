@@ -240,7 +240,7 @@ plot_1 <- eventReactive(input$run_button,{
 })
 
 output$plot_1 <- renderPlot(plot_1())
-output$plot_1_title <- renderText(paste("Poverty Level of Patient Zip Codes"))
+output$plot_1_title <- renderText(paste("Poverty Level of Patient Zip Codes"))♠
 
 plot_2 <- eventReactive(input$run_button,{
   draw_plot_2(data_input())
