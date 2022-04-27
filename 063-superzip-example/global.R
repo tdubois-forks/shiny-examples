@@ -46,6 +46,69 @@ cleantable19 <- cleantable |>
 not_sel <- "Not Selected"
 
 
+
+create_fact_var_table <- function(data_input, fact_var){
+  # data_input <- data_input |>
+  #   mutate(ZIP = as.character(ZIP),
+  #          ZIP = str_pad(ZIP, 5, "left", "0"))
+  # # IF NOT, ATTACH IT HERE
+  # if(fact_var == not_sel){
+  #   state_data <- left_join(data_input, crosswalk, by = c("ZIP" = "ZIP_CODE"))
+  #
+  #   state_data <- state_data |>
+  #     group_by(STATE)|>
+  #     summarize(Patients = sum(Pat_count))
+  # }
+  # else if(fact_var != not_sel){
+    state_data <- data_input |>
+      group_by(fact_var)|>
+      summarize(Patients = sum(Pat_count))
+  # }
+  return(state_data)
+}
+
+# create_fact_var_table <- function(data_input){
+#   data_input <- data_input |>
+#     mutate(ZIP = as.character(ZIP),
+#            ZIP = str_pad(ZIP, 5, "left", "0"))
+#   # IF NOT, ATTACH IT HERE
+#   if(fact_var == not_sel){
+#     # HOW MANY JOINS DO WE HAVE BASED ON ZIP_CODE?
+#     state_data_ZC <- left_join(data_input, crosswalk, by = c("ZIP" = "ZIP_CODE"))
+#     complete_Zip_Code <- nrow(state_data_ZC[complete.cases(state_data_ZC),])
+#     # HOW MANY JOINS DO WE HAVE BASED ON ZCTA?
+#     state_data_ZT <- left_join(data_input, crosswalk, by = c("ZIP" = "ZCTA"))
+#     complete_ZCTA <- nrow(state_data_ZT[complete.cases(state_data_ZT),])
+#     if (complete_Zip_Code > complete_ZCTA) {
+#       state_data <- left_join(data_input, crosswalk, by = c("ZIP" = "ZIP_CODE"))
+#     }
+#       else if (complete_Zip_Code < complete_ZCTA){
+#       state_data <- left_join(data_input, crosswalk, by = c("ZIP" = "ZCTA"))
+#
+#       state_data <- state_data |>
+#         group_by(STATE)|>
+#         summarize(Patients = sum(Pat_count))
+#
+#       state_table <- state_data|>
+#         filter(Patients > 0) |>
+#         arrange(-Patients)
+#       }
+#   }
+#     # IF STATE IS INCLUDED, USE THAT
+#     else if (fact_var != not_sel){
+#       state_data <- data_input |>
+#       group_by(fact_var)|>
+#       summarize(Patients = sum(Pat_count))
+#
+#       state_table <- state_data|>
+#         filter(Patients > 0) |>
+#         arrange(-Patients)
+#     }
+#   return(state_table)
+# }
+
+
+
 draw_plot_1 <- function(data_input){
   # HERE I SAY ZIP, BUT IT SHOULD BE THE INPUT WE DESIGNATE AS ZIP
   data_input <- data_input |>

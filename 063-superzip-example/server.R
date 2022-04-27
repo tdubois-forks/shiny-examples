@@ -259,7 +259,7 @@ num_var_2_summary_table <- eventReactive(input$run_button,{
 
 output$num_var_2_summary_table <- renderTable(num_var_2_summary_table(),colnames = FALSE)
 
-output$fact_var_title <- renderText(paste("Factor Var:",fact_var()))
+output$fact_var_title <- renderText(paste("Patient Distribution Among States"))
 
 fact_var_summary_table <- eventReactive(input$run_button,{
   create_fact_var_table(data_input(), fact_var())
