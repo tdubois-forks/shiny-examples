@@ -134,23 +134,30 @@ navbarPage("Lynch Lab Indices Explorer", id="nav",
       mainPanel(
         tabsetPanel(
           tabPanel(
-            title = "Plot",
-            plotOutput("plot_1")
-          ),
-          tabPanel(
-            title = "Statistics",
+            title = "Patient Poverty",
             fluidRow(
-              column(width = 4, strong(textOutput("num_var_1_title"))),
-              column(width = 4, strong(textOutput("num_var_2_title"))),
+              column(width = 6, strong(textOutput("num_var_1_title")))
+              # column(width = 4, strong(textOutput("num_var_2_title")))
+            ),
+            fluidRow(
+              column(width = 6, plotOutput("plot_1"))
+              # column(width = 4, tableOutput("num_var_2_summary_table"))
+
+          )),
+          tabPanel(
+            title = "Patient States",
+            fluidRow(
+              # column(width = 4, strong(textOutput("num_var_1_title"))),
+              # column(width = 4, strong(textOutput("num_var_2_title"))),
               column(width = 4, strong(textOutput("state_title")))
             ),
             fluidRow(
-              column(width = 4, tableOutput("num_var_1_summary_table")),
-              column(width = 4, tableOutput("num_var_2_summary_table")),
+              # column(width = 4, tableOutput("num_var_1_summary_table")),
+              # column(width = 4, tableOutput("num_var_2_summary_table")),
               column(width = 4, tableOutput("state_summary_table"))
-            ),
-            fluidRow(
-              column(width = 12, strong("Combined Statistics"))
+            # ),
+            # fluidRow(
+            #   column(width = 12, strong("Combined Statistics"))
             ),
             fluidRow(
               column(width = 12, tableOutput("combined_summary_table"))
@@ -158,6 +165,7 @@ navbarPage("Lynch Lab Indices Explorer", id="nav",
 
           )
         )
+
       )
     )
   )

@@ -243,7 +243,7 @@ output$plot_1 <- renderPlot(plot_1())
 
 # 1-d summary tables
 
-# output$num_var_1_title <- renderText(paste("Num Var 1:",num_var_1()))
+ output$num_var_1_title <- renderText(paste("Poverty Level of Patient Zip Codes"))
 #
 # num_var_1_summary_table <- eventReactive(input$run_button,{
 #   create_num_var_table(data_input(), num_var_1())
@@ -259,15 +259,14 @@ output$plot_1 <- renderPlot(plot_1())
 
 # output$num_var_2_summary_table <- renderTable(num_var_2_summary_table(),colnames = FALSE)
 
-# output$state_title <- renderText(paste("Patient Distribution Among States"))
+output$state_title <- renderText(paste("Patient Distribution Among States"))
 
 state_summary_table <- eventReactive(input$run_button,{
   create_state_table(data_input(), state())
 })
 
-output$state_list <- unique(state_data$State)
 
-output$state_summary_table <- renderTable(state_data, digits = 0, colnames = TRUE)
+output$state_summary_table <- renderTable(state_summary_table(), digits = 0, colnames = TRUE)
 
 # multi-d summary table
 

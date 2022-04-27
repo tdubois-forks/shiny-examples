@@ -66,7 +66,7 @@ create_state_table <- function(data_input, state){
     arrange(-Patients) |>
     setNames(c("State", "Count of patients"))
   }
-  return(state_data)
+  state_data
 }
 
 
@@ -165,13 +165,6 @@ create_num_var_table <- function(data_input, num_var){
   }
 }
 
-create_state_table <- function(data_input, state){
-  if(state != not_sel){
-    freq_tbl <- data_input[,.N, by = get(state)]
-    freq_tbl <- setnames(freq_tbl,c("factor_value", "count"))
-    freq_tbl
-  }
-}
 
 create_combined_table <- function(data_input, num_var_1, num_var_2, state){
   if(state != not_sel){
