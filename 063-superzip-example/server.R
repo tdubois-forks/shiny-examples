@@ -240,10 +240,16 @@ plot_1 <- eventReactive(input$run_button,{
 })
 
 output$plot_1 <- renderPlot(plot_1())
+output$plot_1_title <- renderText(paste("Poverty Level of Patient Zip Codes"))
 
-# 1-d summary tables
+plot_2 <- eventReactive(input$run_button,{
+  draw_plot_2(data_input())
+})
 
- output$num_var_1_title <- renderText(paste("Poverty Level of Patient Zip Codes"))
+output$plot_2 <- renderPlot(plot_2())
+output$plot_2_title <- renderText(paste("Poverty Level of Patient Zip Codes Compared to All Zip Codes in Same States"))
+
+
 #
 # num_var_1_summary_table <- eventReactive(input$run_button,{
 #   create_num_var_table(data_input(), num_var_1())

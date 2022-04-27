@@ -136,12 +136,12 @@ navbarPage("Lynch Lab Indices Explorer", id="nav",
           tabPanel(
             title = "Patient Poverty",
             fluidRow(
-              column(width = 6, strong(textOutput("num_var_1_title")))
-              # column(width = 4, strong(textOutput("num_var_2_title")))
+              column(width = 6, strong(textOutput("plot_1_title"))),
+              column(width = 4, strong(textOutput("plot_2_title")))
             ),
             fluidRow(
-              column(width = 6, plotOutput("plot_1"))
-              # column(width = 4, tableOutput("num_var_2_summary_table"))
+              column(width = 6, plotOutput("plot_1")),
+              column(width = 6, plotOutput("plot_2"))
 
           )),
           tabPanel(

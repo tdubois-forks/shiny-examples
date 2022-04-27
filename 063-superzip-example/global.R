@@ -70,27 +70,6 @@ create_state_table <- function(data_input, state){
 }
 
 
-# draw_plot_1 <- function(data_input){
-#   # HERE I SAY ZIP, BUT IT SHOULD BE THE INPUT WE DESIGNATE AS ZIP
-#   data_input <- data_input |>
-#     mutate(ZIP = as.character(ZIP))
-#   # FILTER FOR THE YEAR TO USE
-#   cleantable19 <- cleantable |>
-#     filter(Year == 2019)
-#   # JOIN THE NEIGHBORHOOD VARS TO MY UPLOADED DATA, AND CALCULATE THE POVERTY CATEGORIES
-#   joined_data <- left_join(data_input, cleantable19, by = c("ZIP" = "Zipcode")) |>
-#     mutate(p_level_4 = cut(Poverty, breaks = c(0,10,20,30,100),
-#                            labels = c("Low (<10%)", "Medium (10-20%)", "High (20-30%)", "Very High (>30%)")))
-#   # COUNT OF PATIENTS PER POV LEVEL - PULL FROM OTHER CODE TO MAKE THIS FANCIER- THIS IS A PLACEHOLDER FOR NOW
-#   pov_groups <- joined_data |>
-#     group_by(p_level_4)|>
-#     summarize(n = sum(Pat_count))
-#   # SAME AS ABOVE- THIS IS A PLACEHOLDER
-#   ggplot(data = as.data.frame(pov_groups),
-#          aes(x = p_level_4, y = n)) +
-#     geom_bar(stat="identity")
-# }
-
 draw_plot_1 <- function(data_input){
   # HERE I SAY ZIP, BUT IT SHOULD BE THE INPUT WE DESIGNATE AS ZIP
   data_input <- data_input |>
@@ -151,39 +130,77 @@ draw_plot_1 <- function(data_input){
 
 }
 
-create_num_var_table <- function(data_input, num_var){
-  if(num_var != not_sel){
-    col <- data_input[,get(num_var)]
-    if (length(col)>5000) col_norm <- sample(col,5000) else col_norm <- col
-    norm_test <- shapiro.test(col_norm)
-    statistic <- c("mean", "median", "5th percentile", "95th percentile",
-                   "Shapiro statistic", "Shapiro p-value")
-    value <- c(round(mean(col),2), round(median(col),2),
-               round(quantile(col, 0.05),2), round(quantile(col, 0.95),2),
-               norm_test$statistic, norm_test$p.value)
-    data.table(statistic, value)
-  }
-}
 
 
-create_combined_table <- function(data_input, num_var_1, num_var_2, state){
-  if(state != not_sel){
-    if(num_var_1 != not_sel & num_var_2 != not_sel){
-      res_tbl <- data_input[,.(correlation = cor(get(num_var_1), get(num_var_2))), by = state]
-    }
-    else if(num_var_1 != not_sel & num_var_2 == not_sel){
-      res_tbl <- data_input[,.(mean = mean(get(num_var_1))), by = state]
-    }
-    else if(num_var_1 == not_sel & num_var_2 != not_sel){
-      res_tbl <- data_input[,.(mean = mean(get(num_var_2))), by = state]
-    }
-  }
-  else if(num_var_1 != not_sel & num_var_2 != not_sel){
-    res_tbl <- data.table(
-      statistic = c("correlation"),
-      value = c(cor(
-        data_input[,get(num_var_1)],
-        data_input[,get(num_var_2)])))
-  }
-  return(res_tbl)
+
+draw_plot_2 <- function(data_input){
+  # HERE I SAY ZIP, BUT IT SHOULD BE THE INPUT WE DESIGNATE AS ZIP
+  data_input <- data_input |>
+    mutate(ZIP = as.character(ZIP))
+  # FILTER FOR THE YEAR TO USE
+  cleantable19 <- cleantable |>
+    filter(Year == 2019)
+  # JOIN THE NEIGHBORHOOD VARS TO MY UPLOADED DATA, AND CALCULATE THE POVERTY CATEGORIES
+  joined_data <- left_join(data_input, cleantable19, by = c("ZIP" = "Zipcode")) |>
+    mutate(p_level_4 = cut(Poverty, breaks = c(0,10,20,30,100),
+                           labels = c("Low (<10%)", "Medium (10-20%)", "High (20-30%)", "Very High (>30%)")))
+  # COUNT OF PATIENTS PER POV LEVEL - PULL FROM OTHER CODE TO MAKE THIS FANCIER- THIS IS A PLACEHOLDER FOR NOW
+  pats <- joined_data |>
+    group_by(p_level_4)|>
+    summarize(count = sum(Pat_count, na.rm = TRUE)) |>
+    mutate(total = sum(count, na.rm = TRUE),
+           perc = round(count/total*100, 1),
+           unit = "pats")
+
+  state_list <- unique(joined_data$State)
+
+  zips <- cleantable19[which(cleantable19$State%in%state_list),]|>
+    mutate(p_level_4 = cut(Poverty, breaks = c(0,10,20,30,100),
+                           labels = c("Low (<10%)", "Medium (10-20%)", "High (20-30%)", "Very High (>30%)")))|>
+    group_by(p_level_4)|>
+    summarize(count = n()) |>
+    mutate(total = sum(count, na.rm = TRUE),
+           perc = round(count/total*100,0),
+           unit = "zips")
+
+  both <- rbind(pats, zips) |>
+    mutate(labels = paste0(round(perc, 0), "%"))
+
+  both <- both |>
+  filter(is.na(p_level_4)==FALSE)
+
+bar_chart <- ggplot(both, aes(fill = unit, y = perc, x = p_level_4))+
+  geom_bar(position = "dodge", stat = "identity",color = "white", size = 0.25)+
+  scale_y_continuous(labels = function(x) paste0(x, "%"))+
+  scale_fill_manual(values = c("pats" = "#5699B8", "zips" = "gray"), labels = c("Patients", "Zip Codes", name = NULL))+
+  geom_text(aes(label=labels), vjust=-0.3, size=3.5, position = position_dodge(0.9))+
+  theme_minimal()+
+  # ggtitle("Distribution of Patient Zip Codes Compared to All Zip Codes")+
+  theme(axis.title = element_blank(), legend.title = element_blank(), axis.text.y = element_blank()) #remove x axis labels
+
+bar_chart
+
 }
+#
+#
+# create_combined_table <- function(data_input, num_var_1, num_var_2, state){
+#   if(state != not_sel){
+#     if(num_var_1 != not_sel & num_var_2 != not_sel){
+#       res_tbl <- data_input[,.(correlation = cor(get(num_var_1), get(num_var_2))), by = state]
+#     }
+#     else if(num_var_1 != not_sel & num_var_2 == not_sel){
+#       res_tbl <- data_input[,.(mean = mean(get(num_var_1))), by = state]
+#     }
+#     else if(num_var_1 == not_sel & num_var_2 != not_sel){
+#       res_tbl <- data_input[,.(mean = mean(get(num_var_2))), by = state]
+#     }
+#   }
+#   else if(num_var_1 != not_sel & num_var_2 != not_sel){
+#     res_tbl <- data.table(
+#       statistic = c("correlation"),
+#       value = c(cor(
+#         data_input[,get(num_var_1)],
+#         data_input[,get(num_var_2)])))
+#   }
+#   return(res_tbl)
+# }
