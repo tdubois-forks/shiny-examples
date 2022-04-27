@@ -1,5 +1,6 @@
 library(dplyr)
 library(readr)
+library(stringr)
 
 
 # CALL IN WHAT WE NEED
@@ -68,47 +69,27 @@ create_state_table <- function(data_input, state){
   return(state_data)
 }
 
-# create_state_table <- function(data_input){
+
+# draw_plot_1 <- function(data_input){
+#   # HERE I SAY ZIP, BUT IT SHOULD BE THE INPUT WE DESIGNATE AS ZIP
 #   data_input <- data_input |>
-#     mutate(ZIP = as.character(ZIP),
-#            ZIP = str_pad(ZIP, 5, "left", "0"))
-#   # IF NOT, ATTACH IT HERE
-#   if(state == not_sel){
-#     # HOW MANY JOINS DO WE HAVE BASED ON ZIP_CODE?
-#     state_data_ZC <- left_join(data_input, crosswalk, by = c("ZIP" = "ZIP_CODE"))
-#     complete_Zip_Code <- nrow(state_data_ZC[complete.cases(state_data_ZC),])
-#     # HOW MANY JOINS DO WE HAVE BASED ON ZCTA?
-#     state_data_ZT <- left_join(data_input, crosswalk, by = c("ZIP" = "ZCTA"))
-#     complete_ZCTA <- nrow(state_data_ZT[complete.cases(state_data_ZT),])
-#     if (complete_Zip_Code > complete_ZCTA) {
-#       state_data <- left_join(data_input, crosswalk, by = c("ZIP" = "ZIP_CODE"))
-#     }
-#       else if (complete_Zip_Code < complete_ZCTA){
-#       state_data <- left_join(data_input, crosswalk, by = c("ZIP" = "ZCTA"))
-#
-#       state_data <- state_data |>
-#         group_by(STATE)|>
-#         summarize(Patients = sum(Pat_count))
-#
-#       state_table <- state_data|>
-#         filter(Patients > 0) |>
-#         arrange(-Patients)
-#       }
-#   }
-#     # IF STATE IS INCLUDED, USE THAT
-#     else if (state != not_sel){
-#       state_data <- data_input |>
-#       group_by(state)|>
-#       summarize(Patients = sum(Pat_count))
-#
-#       state_table <- state_data|>
-#         filter(Patients > 0) |>
-#         arrange(-Patients)
-#     }
-#   return(state_table)
+#     mutate(ZIP = as.character(ZIP))
+#   # FILTER FOR THE YEAR TO USE
+#   cleantable19 <- cleantable |>
+#     filter(Year == 2019)
+#   # JOIN THE NEIGHBORHOOD VARS TO MY UPLOADED DATA, AND CALCULATE THE POVERTY CATEGORIES
+#   joined_data <- left_join(data_input, cleantable19, by = c("ZIP" = "Zipcode")) |>
+#     mutate(p_level_4 = cut(Poverty, breaks = c(0,10,20,30,100),
+#                            labels = c("Low (<10%)", "Medium (10-20%)", "High (20-30%)", "Very High (>30%)")))
+#   # COUNT OF PATIENTS PER POV LEVEL - PULL FROM OTHER CODE TO MAKE THIS FANCIER- THIS IS A PLACEHOLDER FOR NOW
+#   pov_groups <- joined_data |>
+#     group_by(p_level_4)|>
+#     summarize(n = sum(Pat_count))
+#   # SAME AS ABOVE- THIS IS A PLACEHOLDER
+#   ggplot(data = as.data.frame(pov_groups),
+#          aes(x = p_level_4, y = n)) +
+#     geom_bar(stat="identity")
 # }
-
-
 
 draw_plot_1 <- function(data_input){
   # HERE I SAY ZIP, BUT IT SHOULD BE THE INPUT WE DESIGNATE AS ZIP
@@ -122,13 +103,52 @@ draw_plot_1 <- function(data_input){
     mutate(p_level_4 = cut(Poverty, breaks = c(0,10,20,30,100),
                            labels = c("Low (<10%)", "Medium (10-20%)", "High (20-30%)", "Very High (>30%)")))
   # COUNT OF PATIENTS PER POV LEVEL - PULL FROM OTHER CODE TO MAKE THIS FANCIER- THIS IS A PLACEHOLDER FOR NOW
-  pov_groups <- joined_data |>
+  pats <- joined_data |>
     group_by(p_level_4)|>
-    summarize(n = sum(Pat_count))
-  # SAME AS ABOVE- THIS IS A PLACEHOLDER
-  ggplot(data = as.data.frame(pov_groups),
-         aes(x = p_level_4, y = n)) +
-    geom_bar(stat="identity")
+    summarize(count = sum(Pat_count, na.rm = TRUE)) |>
+    mutate(total = sum(count, na.rm = TRUE),
+           perc = round(count/total*100, 1),
+           unit = "pats")
+
+  state_list <- unique(joined_data$State)
+
+  zips <- cleantable19[which(cleantable19$State%in%state_list),]|>
+    mutate(p_level_4 = cut(Poverty, breaks = c(0,10,20,30,100),
+                           labels = c("Low (<10%)", "Medium (10-20%)", "High (20-30%)", "Very High (>30%)")))|>
+    group_by(p_level_4)|>
+    summarize(count = n()) |>
+    mutate(total = sum(count, na.rm = TRUE),
+           perc = round(count/total*100,0),
+           unit = "zips")
+
+  both <- rbind(pats, zips) |>
+    mutate(labels = paste0(round(perc, 0), "%"))
+
+  # SUBSET
+  pats <- both[which(both$unit == "pats"),] |>
+    mutate(fraction = count / total,
+           ymax = cumsum(fraction),
+           ymin = c(0, head(ymax, n=-1)),
+           labelPosition = (ymax + ymin) / 2,
+           category = sapply(strsplit(as.character(p_level_4), split = "\\("), "[[", 1),
+           label = paste0(category, "\n", labels))
+
+  pats <- pats[1:4,]
+
+  # Make the plot
+  colors <- c("#DEE7EF", "#A09FCE", "#8C62AA", "#533445")
+  donut_chart <- ggplot(pats, aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill= p_level_4)) +
+    geom_rect(color = "white", size = 0.25) +
+    geom_label(x=3.5, aes(y=labelPosition, label=label), size=3.5, color = c("black", "black", "black", "white")) +
+    scale_fill_manual(values = colors)+
+    # scale_fill_brewer(palette=4) +
+    coord_polar(theta="y") +
+    xlim(c(2, 4)) +
+    theme_void() +
+    theme(legend.position = "none")
+
+  donut_chart
+
 }
 
 create_num_var_table <- function(data_input, num_var){

@@ -265,6 +265,8 @@ state_summary_table <- eventReactive(input$run_button,{
   create_state_table(data_input(), state())
 })
 
+output$state_list <- unique(state_data$State)
+
 output$state_summary_table <- renderTable(state_data, digits = 0, colnames = TRUE)
 
 # multi-d summary table
